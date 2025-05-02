@@ -61,34 +61,49 @@
   </style>
 </head>
 <body>
-  <h1>Top Bitcoin News</h1>
-
-  <input type="text" id="searchTerm" placeholder="Search Bitcoin news..." />
-  <button onclick="fetchNews()">Refresh</button>
-
-  <ul id="news-list"></ul>
-
-  <script>
-    async function fetchNews() {
-      const query = document.getElementById('searchTerm').value || 'bitcoin';
-      const response = await fetch(`/api/bitcoin-news?q=${encodeURIComponent(query)}`);
-      const articles = await response.json();
-
-      const list = document.getElementById('news-list');
-      list.innerHTML = '';
-
-      articles.forEach(article => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <a href="${article.url}" target="_blank">${article.title}</a>
-          <p>${article.description || 'No summary available.'}</p>
-          <p><small>Published at: ${new Date(article.publishedAt).toLocaleString()}</small></p>
-        `;
-        list.appendChild(li);
-      });
-    }
-
-    fetchNews();
-  </script>
-</body>
+    <h1>Top Bitcoin News</h1>
+    
+    <h2 id="btc-price">Current BTC Price: Loading...</h2>
+  
+    <input type="text" id="searchTerm" placeholder="Search Bitcoin news..." />
+    <button onclick="fetchNews()">Refresh</button>
+  
+    <ul id="news-list"></ul>
+  
+    <script>
+      async function fetchBitcoinPrice() {
+        try {
+          const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+          const data = await res.json();
+          const price = data.bitcoin.usd;
+          document.getElementById('btc-price').innerText = `Current BTC Price: $${price.toLocaleString()}`;
+        } catch (err) {
+          document.getElementById('btc-price').innerText = 'Failed to load price.';
+        }
+      }
+  
+      async function fetchNews() {
+        const query = document.getElementById('searchTerm').value || 'bitcoin';
+        const response = await fetch(`/api/bitcoin-news?q=${encodeURIComponent(query)}`);
+        const articles = await response.json();
+  
+        const list = document.getElementById('news-list');
+        list.innerHTML = '';
+  
+        articles.forEach(article => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <a href="${article.url}" target="_blank">${article.title}</a>
+            <p>${article.description || 'No summary available.'}</p>
+            <p><small>Published at: ${new Date(article.publishedAt).toLocaleString()}</small></p>
+          `;
+          list.appendChild(li);
+        });
+      }
+  
+      // Load everything on page load
+      fetchBitcoinPrice();
+      fetchNews();
+    </script>
+  </body>
 </html>
