@@ -109,15 +109,15 @@
 
   <header>
     <div class="header-title">
-      <img src="https://static.coindesk.com/static/images/icons/opengraph.png" alt="Bitcoin Logo" />
+      <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=025" alt="Bitcoin Logo" />
       <h1>Top Bitcoin News</h1>
     </div>
     <div id="btc-price">Current BTC Price: Loading...</div>
   </header>
 
   <div id="content">
-    <input type="text" id="searchTerm" placeholder="Search Bitcoin news..." />
-    <button onclick="fetchNews()">Refresh</button>
+    <input type="text" id="searchTerm" placeholder="Search articles..." oninput="filterArticles()" />
+    <button onclick="fetchNews()">Refresh Articles</button>
 
     <ul id="news-list"></ul>
   </div>
@@ -168,6 +168,16 @@
           <p><small>Published at: ${new Date(article.publishedAt).toLocaleString()}</small></p>
         `;
         list.appendChild(li);
+      });
+    }
+
+    function filterArticles() {
+      const searchText = document.getElementById('searchTerm').value.toLowerCase();
+      const articles = document.querySelectorAll('#news-list li');
+
+      articles.forEach(article => {
+        const text = article.textContent.toLowerCase();
+        article.style.display = text.includes(searchText) ? '' : 'none';
       });
     }
 
